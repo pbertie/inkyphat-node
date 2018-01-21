@@ -19,10 +19,11 @@
     "nyc": "^11.4.1"
   },
   "scripts": {
-    "test": "node_modules/.bin/mocha test/* --reporter nyan --timeout 3000",
+    "test": "node_modules/.bin/mocha test/* --reporter spec --timeout 3000",
     "coverage": "nyc --reporter=html --reporter=text node_modules/mocha/bin/_mocha test/*",
     "report": "nyc report --reporter=text-lcov | coveralls",
-    "jshint": "jshint lib examples test"
+    "jshint": "jshint lib examples test",
+    "preversion": "npm test"
   },
   "repository": {
     "type": "git",
