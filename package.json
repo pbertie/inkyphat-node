@@ -1,6 +1,6 @@
 {
   "name": "inkyphat",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "NodeJS Library for Raspberry Pi InkyPhat",
   "main": "lib/inkyphat.js",
   "directories": {
