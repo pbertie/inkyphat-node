@@ -33,16 +33,16 @@ const InkyphatSpi = require('../lib/inkyphat_spi');
         this._pin = pin;
         this._inout = inout;
         this._watch = watch;
-      }
+      };
       GpioSpy.prototype.read = function(cb) {
         setTimeout(function() {
           cb(null, 0);
         }, 1);
-      }
+      };
       GpioSpy.prototype.write = function(val, cb) {
         setTimeout(cb, 1);
-      }
-      GpioSpy.prototype.unexport = Function.prototype
+      };
+      GpioSpy.prototype.unexport = Function.prototype;
       InkyphatSpi.getNewTestInstance(null, spiSpy, GpioSpy);
     });
 

@@ -1,6 +1,7 @@
-# inkyphat [![Build Status](https://travis-ci.org/pbertie/inkyphat-node.svg?branch=master)](https://travis-ci.org/pbertie/inkyphat-node) [![Coverage Status](https://coveralls.io/repos/github/pbertie/inkyphat-node/badge.svg?branch=master)](https://coveralls.io/github/pbertie/inkyphat-node?branch=master)
+# inkyphat
+[![Build Status](https://travis-ci.org/pbertie/inkyphat-node.svg?branch=master)](https://travis-ci.org/pbertie/inkyphat-node) [![Coverage Status](https://coveralls.io/repos/github/pbertie/inkyphat-node/badge.svg?branch=master)](https://coveralls.io/github/pbertie/inkyphat-node?branch=master) [![dependencies Status](https://david-dm.org/pbertie/inkyphat/status.svg)](https://david-dm.org/pbertie/inkyphat) [![devDependencies Status](https://david-dm.org/pbertie/inkyphat/dev-status.svg)](https://david-dm.org/pbertie/inkyphat?type=dev)
 
-A NodeJS Module to allow you to control the Inkyphat for Raspberry Pi. Based on the Python code available here: https://github.com/pimoroni/inky-phat
+A NodeJS Module to allow you to control the Inkyphat for Raspberry Pi. Based on the Python code available from [Pimoroni](https://github.com/pimoroni/inky-phat).
 
 ## Installation
 
@@ -25,7 +26,11 @@ A NodeJS Module to allow you to control the Inkyphat for Raspberry Pi. Based on 
 
 ## Tests
 
-  `npm test`
+  `npm test` - Run Tests.
+
+  `npm run coverage` - Run Tests and display coverage.
+
+  `npm run jshint` - Run JSHint
 
 ## Contributing
 
