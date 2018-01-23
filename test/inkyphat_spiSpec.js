@@ -1,9 +1,9 @@
 /*jshint esversion: 6*/
 /*jshint expr: true*/
 const chai = require('chai');
-const sinon = require("sinon");
-const sinonChai = require("sinon-chai");
-const chaiAsPromised = require("chai-as-promised");
+const sinon = require('sinon');
+const sinonChai = require('sinon-chai');
+const chaiAsPromised = require('chai-as-promised');
 chai.use(sinonChai);
 chai.use(chaiAsPromised);
 
@@ -11,7 +11,7 @@ const InkyphatSpi = require('../lib/inkyphat_spi');
 (function() {
   "use strict";
 
-  /* gloabl describe,it*/
+  /* gloabl describe,it,beforeEach*/
 
   const expect = chai.expect;
   const RESET_PIN = 27;
@@ -25,14 +25,15 @@ const InkyphatSpi = require('../lib/inkyphat_spi');
   const HEIGHT = 104;
 
   /**
-    Create Multidimensional array.
-  **/
+   * Create Multidimensional array.
+   * @param {...number} length - Size of the array to create, each argument defines a dimension.
+   */
   function createArray(length) {
-    var arr = new Array(length || 0);
+    const arr = new Array(length || 0);
 
     if (arguments.length > 1) {
-      var args = Array.prototype.slice.call(arguments, 1);
-      for (var i = 0; i < length; i++)
+      const args = Array.prototype.slice.call(arguments, 1);
+      for (let i = 0; i < length; i++)
         arr[i] = createArray.apply(null, args);
     }
     return arr;

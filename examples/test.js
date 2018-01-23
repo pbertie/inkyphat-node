@@ -1,23 +1,21 @@
 /*jshint esversion: 6*/
-var Inkyphat = require('../lib/inkyphat');
+const inkyphat = require('../lib/inkyphat').getInstance();
 (function() {
   "use strict";
 
-  var inkyphat = new Inkyphat();
-
   inkyphat.init().then(function() {
-    inkyphat.setBorder(Inkyphat.WHITE);
+    inkyphat.setBorder(inkyphat.WHITE);
 
-    let color = Inkyphat.BLACK;
+    let color = inkyphat.BLACK;
     for (let x = 0; x < inkyphat.getWidth() / 4; x++) {
       for (let y = 0; y < inkyphat.getHeight() / 4; y++) {
         inkyphat.drawRect(x * 4, y * 4, (x * 4) + 4, (y * 4) + 4, color);
-        if (color === Inkyphat.BLACK) {
-          color = Inkyphat.RED;
-        } else if (color === Inkyphat.RED) {
-          color = Inkyphat.WHITE;
+        if (color === inkyphat.BLACK) {
+          color = inkyphat.RED;
+        } else if (color === inkyphat.RED) {
+          color = inkyphat.WHITE;
         } else {
-          color = Inkyphat.BLACK;
+          color = inkyphat.BLACK;
         }
       }
     }
@@ -26,7 +24,7 @@ var Inkyphat = require('../lib/inkyphat');
 
     //inkyphat.drawRect(30, 30, 90, 70, Inkyphat.RED);
 
-    inkyphat.drawRect(21, 40, 80, 50, Inkyphat.WHITE);
+    inkyphat.drawRect(21, 40, 80, 50, inkyphat.WHITE);
 
     return inkyphat.redraw();
   }).then(function() {
