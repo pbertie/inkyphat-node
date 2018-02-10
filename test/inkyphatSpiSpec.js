@@ -52,7 +52,7 @@ const iUtils = require('../lib/inkyphatSpiUtils');
   };
   stubs.Spi = {
     initialize: sinon.stub().returns(stubs.spiDevice)
-  }
+  };
 
   stubs.Gpio = function(pin, inout, watch) {
     this._pin = pin;
@@ -90,7 +90,7 @@ const iUtils = require('../lib/inkyphatSpiUtils');
       stubs.spiDevice.clockSpeed.resetHistory();
       stubs.spiDevice.write.resetHistory();
       stubs.Spi.initialize.resetHistory();
-      stubs.Spi.initialize.returns(stubs.spiDevice)
+      stubs.Spi.initialize.returns(stubs.spiDevice);
 
       stubs.Gpio.resetHistory();
       stubs.resetPin = null;
