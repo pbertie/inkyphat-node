@@ -14,9 +14,6 @@ const Inkyphat = require('../lib/inkyphat');
   /* gloabl describe,it,beforeEach*/
 
   const expect = chai.expect;
-  const RESET_PIN = 27;
-  const BUSY_PIN = 17;
-  const DC_PIN = 22;
 
   const WHITE = 0;
   const BLACK = 1;

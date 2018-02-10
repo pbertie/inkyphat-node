@@ -7,12 +7,15 @@ const chaiAsPromised = require('chai-as-promised');
 chai.use(sinonChai);
 chai.use(chaiAsPromised);
 
-const InkyphatSpi = require('../lib/inkyphat_spi');
+const InkyphatSpi = require('../lib/inkyphatSpi');
+const iUtils = require('../lib/inkyphatSpiUtils');
 (function() {
   "use strict";
 
   /* gloabl describe,it,beforeEach*/
 
+
+  iUtils.enableDelays = 0;
   const expect = chai.expect;
   const RESET_PIN = 27;
   const BUSY_PIN = 17;
@@ -39,50 +42,64 @@ const InkyphatSpi = require('../lib/inkyphat_spi');
     return arr;
   }
 
+  // Ensure the InkyphatSpi is not using the real SPI Interface or GPIO Pins...
+  const stubs = {};
+  stubs.spiDevice = {
+    clockSpeed: sinon.spy(),
+    write: sinon.stub().callsFake(function(val, cb) {
+      setTimeout(cb, 1);
+    })
+  };
+  stubs.Spi = {
+    initialize: sinon.stub().returns(stubs.spiDevice)
+  }
+
+  stubs.Gpio = function(pin, inout, watch) {
+    this._pin = pin;
+    this._inout = inout;
+    this._watch = watch;
+    sinon.spy(this, 'read');
+    sinon.spy(this, 'write');
+    sinon.spy(this, 'unexport');
+    if (pin === RESET_PIN) {
+      stubs.resetPin = this;
+    } else if (pin === BUSY_PIN) {
+      stubs.busyPin = this;
+    } else if (pin === DC_PIN) {
+      stubs.dcPin = this;
+    }
+  };
+  stubs.Gpio.prototype.read = function(cb) {
+    setTimeout(function() {
+      cb(null, LOW);
+    }, 1);
+  };
+  stubs.Gpio.prototype.write = function(val, cb) {
+    setTimeout(cb, 1);
+  };
+  stubs.Gpio.prototype.unexport = Function.prototype;
+  sinon.spy(stubs, 'Gpio');
+
+  InkyphatSpi.setSpiClass(stubs.Spi);
+  InkyphatSpi.setGpioClass(stubs.Gpio);
+
   describe('inkyphat_spiSpec', function() {
 
     beforeEach(function() {
-      const self = this;
-      // Ensure the InkyphatSpi is not using the real SPI Interface or GPIO Pins...
-      this.spiDevice = {
-        clockSpeed: sinon.spy(),
-        write: sinon.stub().callsFake(function(val, cb) {
-          setTimeout(cb, 1);
-        })
-      };
-      this.spiSpy = {
-        initialize: sinon.stub().returns(this.spiDevice)
-      };
+      // Reset the spies/stubs...
+      stubs.spiDevice.clockSpeed.resetHistory();
+      stubs.spiDevice.write.resetHistory();
+      stubs.Spi.initialize.resetHistory();
+      stubs.Spi.initialize.returns(stubs.spiDevice)
 
-      this.GpioSpy = function(pin, inout, watch) {
-        this._pin = pin;
-        this._inout = inout;
-        this._watch = watch;
-        sinon.spy(this, 'read');
-        sinon.spy(this, 'write');
-        sinon.spy(this, 'unexport');
-        if (pin === RESET_PIN) {
-          self.resetPin = this;
-        } else if (pin === BUSY_PIN) {
-          self.busyPin = this;
-        } else if (pin === DC_PIN) {
-          self.dcPin = this;
-        }
-      };
-      this.GpioSpy.prototype.read = function(cb) {
-        setTimeout(function() {
-          cb(null, LOW);
-        }, 1);
-      };
-      this.GpioSpy.prototype.write = function(val, cb) {
-        setTimeout(cb, 1);
-      };
-      this.GpioSpy.prototype.unexport = Function.prototype;
+      stubs.Gpio.resetHistory();
+      stubs.resetPin = null;
+      stubs.busyPin = null;
+      stubs.dcPin = null;
 
-      sinon.spy(this, 'GpioSpy');
-
-      this.inkyphatSpi = InkyphatSpi.getNewTestInstance(null, this.spiSpy, this.GpioSpy);
-      this.inkyphatSpi.logging = false;
+      this.inkyphatSpi = InkyphatSpi.getNewInstance();
+      this.loggingSpy = sinon.spy();
+      InkyphatSpi.setLogFunction(this.loggingSpy);
     });
 
 
@@ -93,38 +110,51 @@ const InkyphatSpi = require('../lib/inkyphat_spi');
       expect(InkyphatSpi.RED).to.equal(2);
     });
 
+    describe('getInstance', function() {
+      it('Should return the same instance if it already exists', function() {
+        expect(InkyphatSpi.getInstance()).to.equal(this.inkyphatSpi);
+      });
+    });
+
     describe('init', function() {
       it('Should create Reset GPIO Pin', function() {
         const self = this;
         return this.inkyphatSpi.init().then(function() {
-          expect(self.GpioSpy).to.have.been.calledWithNew;
-          expect(self.GpioSpy).to.have.been.calledWith(RESET_PIN, 'out');
+          expect(stubs.Gpio).to.have.been.calledWithNew;
+          expect(stubs.Gpio).to.have.been.calledWith(RESET_PIN, 'out');
         });
       });
 
       it('Should create Data/Command GPIO Pin', function() {
         const self = this;
         return this.inkyphatSpi.init().then(function() {
-          expect(self.GpioSpy).to.have.been.calledWithNew;
-          expect(self.GpioSpy).to.have.been.calledWith(DC_PIN, 'out');
+          expect(stubs.Gpio).to.have.been.calledWithNew;
+          expect(stubs.Gpio).to.have.been.calledWith(DC_PIN, 'out');
         });
       });
 
       it('Should create Busy GPIO Pin', function() {
         const self = this;
         return this.inkyphatSpi.init().then(function() {
-          expect(self.GpioSpy).to.have.been.calledWithNew;
-          expect(self.GpioSpy).to.have.been.calledWith(BUSY_PIN, 'in', 'both');
+          expect(stubs.Gpio).to.have.been.calledWithNew;
+          expect(stubs.Gpio).to.have.been.calledWith(BUSY_PIN, 'in', 'both');
         });
       });
 
       it('Should initialise the SPI Interface with the default device', function() {
         const self = this;
         return this.inkyphatSpi.init().then(function() {
-          expect(self.spiSpy.initialize).to.have.been.calledOnce;
-          expect(self.spiSpy.initialize).to.have.been.calledWith('/dev/spidev0.0');
-          expect(self.spiDevice.clockSpeed).to.have.been.calledWith(500000);
+          expect(stubs.Spi.initialize).to.have.been.calledOnce;
+          expect(stubs.Spi.initialize).to.have.been.calledWith('/dev/spidev0.0');
+          expect(stubs.spiDevice.clockSpeed).to.have.been.calledOnce;
+          expect(stubs.spiDevice.clockSpeed).to.have.been.calledWith(500000);
         });
+      });
+
+      it('Should reject if SPI Interface errors', function() {
+        const self = this;
+        stubs.Spi.initialize.throws();
+        return expect(this.inkyphatSpi.init()).to.be.rejectedWith('Failed to Setup SPI Device');
       });
 
       it('Should create black and red buffers', function() {
@@ -198,18 +228,18 @@ const InkyphatSpi = require('../lib/inkyphat_spi');
         return this.inkyphatSpi.init().then(function() {
           return self.inkyphatSpi.getVersion().then(function(version) {
             expect(version).to.equal(2);
-            expect(self.dcPin.write).to.have.been.calledOnce;
-            expect(self.dcPin.write).to.have.been.calledWith(LOW);
-            expect(self.dcPin.read).not.to.have.been.called;
+            expect(stubs.dcPin.write).to.have.been.calledOnce;
+            expect(stubs.dcPin.write).to.have.been.calledWith(LOW);
+            expect(stubs.dcPin.read).not.to.have.been.called;
 
-            expect(self.resetPin.write).to.have.been.calledThrice;
-            expect(self.resetPin.write.getCall(0).args[0]).to.equal(HIGH);
-            expect(self.resetPin.write.getCall(1).args[0]).to.equal(LOW);
-            expect(self.resetPin.write.getCall(2).args[0]).to.equal(HIGH);
-            expect(self.resetPin.read).not.to.have.been.called;
+            expect(stubs.resetPin.write).to.have.been.calledThrice;
+            expect(stubs.resetPin.write.getCall(0).args[0]).to.equal(HIGH);
+            expect(stubs.resetPin.write.getCall(1).args[0]).to.equal(LOW);
+            expect(stubs.resetPin.write.getCall(2).args[0]).to.equal(HIGH);
+            expect(stubs.resetPin.read).not.to.have.been.called;
 
-            expect(self.busyPin.read).to.have.been.called;
-            expect(self.busyPin.write).not.to.have.been.called;
+            expect(stubs.busyPin.read).to.have.been.called;
+            expect(stubs.busyPin.write).not.to.have.been.called;
           });
         });
       });
@@ -222,7 +252,18 @@ const InkyphatSpi = require('../lib/inkyphat_spi');
           sinon.spy(self.inkyphatSpi, '_sendCommand');
           return self.inkyphatSpi.redraw(createArray(WIDTH, HEIGHT));
         }).then(function() {
-          expect(self.spiDevice.write).to.have.been.called;
+          expect(stubs.spiDevice.write).to.have.been.called;
+          expect(self.inkyphatSpi._sendCommand).to.have.been.calledWith(0x20);
+        });
+      });
+
+      it('Should reject if the buffer is an incorrect size', function() {
+        const self = this;
+        return this.inkyphatSpi.init().then(function() {
+          sinon.spy(self.inkyphatSpi, '_sendCommand');
+          return self.inkyphatSpi.redraw(createArray(WIDTH, HEIGHT));
+        }).then(function() {
+          expect(stubs.spiDevice.write).to.have.been.called;
           expect(self.inkyphatSpi._sendCommand).to.have.been.calledWith(0x20);
         });
       });
