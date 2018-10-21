@@ -36,7 +36,7 @@
     "coverage": "nyc --reporter=html --reporter=text node_modules/mocha/bin/_mocha test/*",
     "report": "nyc report --reporter=text-lcov | coveralls",
     "lint": "./node_modules/.bin/eslint */*.js",
-    "preversion": "npm run lint && npm test",
+    "preversion": "npm run lint",
     "postversion": "git push && git push --tags"
   },
   "repository": {
