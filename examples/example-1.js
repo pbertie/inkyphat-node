@@ -1,4 +1,4 @@
-const inkyphat = require('../lib/inkyphat')({logToStd: true});
+const inkyphat = require('../lib/inkyphat')({ logToStd: true });
 async function main () {
   await inkyphat.init()
 
