@@ -9,21 +9,23 @@ A NodeJS Module to allow you to control the Inkyphat for Raspberry Pi. Based on 
 
 ## Usage
 
-    const inkyphat = require('inkyphat')();
+```js
+const inkyphat = require('inkyphat')();
 
-    async function main() {
+async function main() {
 
-      await inkyphat.init();
+  await inkyphat.init();
 
-      inkyphat.setPixel(1, 5, inkyphat.RED);
+  inkyphat.setPixel(1, 5, inkyphat.RED);
 
-      inkyphat.drawRect(50, 100, inkyphat.BLACK);
+  inkyphat.drawRect(50, 100, inkyphat.BLACK);
 
-      await inkyphat.redraw();
+  await inkyphat.redraw();
 
-      await inkyphat.destroy();
-    }
-    main();
+  await inkyphat.destroy();
+}
+main();
+```
 
 
 ## Tests
