@@ -25,42 +25,42 @@ beforeEach(() => {
   };
 });
 
-afterEach(async function () {
+afterEach(async () => {
   if (inkyphat) {
     await inkyphat.destroy();
   }
 });
 
 describe('inkyphat factory', () => {
-  it('should default mode to quick', async function () {
+  it('should default mode to quick', async () => {
     inkyphat = Inkyphat({ ControllerFactory: sinon.stub().returns(controller) });
     await inkyphat.redraw();
     expect(controller.redraw).to.have.been.called;
     expect(controller.redraw.getCall(0).args[2]).to.equal('quick');
   });
 
-  it('should allow mode to be set', async function () {
+  it('should allow mode to be set', async () => {
     inkyphat = Inkyphat({ ControllerFactory: sinon.stub().returns(controller), mode: 'pimoroni' });
     await inkyphat.redraw();
     expect(controller.redraw).to.have.been.called;
     expect(controller.redraw.getCall(0).args[2]).to.equal('pimoroni');
   });
 
-  it('should revert back to quick if invalid mode is set', async function () {
+  it('should revert back to quick if invalid mode is set', async () => {
     inkyphat = Inkyphat({ ControllerFactory: sinon.stub().returns(controller), mode: 'some-unknown-mode' });
     await inkyphat.redraw();
     expect(controller.redraw).to.have.been.called;
     expect(controller.redraw.getCall(0).args[2]).to.equal('quick');
   });
 
-  it('should default border to white', async function () {
+  it('should default border to white', async () => {
     inkyphat = Inkyphat({ ControllerFactory: sinon.stub().returns(controller) });
     await inkyphat.redraw();
     expect(controller.redraw).to.have.been.called;
     expect(controller.redraw.getCall(0).args[1]).to.equal(WHITE);
   });
 
-  it('should allow border to be set', async function () {
+  it('should allow border to be set', async () => {
     inkyphat = Inkyphat({ ControllerFactory: sinon.stub().returns(controller), border: BLACK });
     await inkyphat.redraw();
     expect(controller.redraw).to.have.been.called;
@@ -90,13 +90,13 @@ describe('inkyphat', () => {
     expect(inkyphat.getModes()).to.deep.equal(['pimoroni', 'quick', 'noFlash', 'clear']);
   });
 
-  it('should not pass spiDevice to controller if not specified', async function () {
+  it('should not pass spiDevice to controller if not specified', async () => {
     await inkyphat.init();
     expect(controllerFactory).to.have.been.called;
     expect(controllerFactory.getCall(0).args[0]).to.not.have.property('spiDevice');
   });
 
-  it('should pass spiDevice to controller if passed when initialised', async function () {
+  it('should pass spiDevice to controller if passed when initialised', async () => {
     await inkyphat.init({ spiDevice: '/dev/spidev0.1' });
     expect(controllerFactory).to.have.been.called;
     expect(controllerFactory.getCall(0).args[0]).to.deep.include({
@@ -105,7 +105,7 @@ describe('inkyphat', () => {
   });
 
   describe('clearSceen', () => {
-    it('should initialize contoller if not already done', async function () {
+    it('should initialize contoller if not already done', async () => {
       expect(controller.init).to.not.have.been.called;
       await inkyphat.clearScreen();
       expect(controller.init).to.have.callCount(1);
@@ -113,7 +113,7 @@ describe('inkyphat', () => {
       expect(controller.init).to.have.callCount(1);
     });
 
-    it('should not initialize contoller if already done', async function () {
+    it('should not initialize contoller if already done', async () => {
       await inkyphat.init();
       controller.init.resetHistory();
       expect(controller.init).to.not.have.been.called;
@@ -121,7 +121,7 @@ describe('inkyphat', () => {
       expect(controller.init).to.not.have.been.called;
     });
 
-    it('should call clear on controller', async function () {
+    it('should call clear on controller', async () => {
       expect(controller.clear).to.not.have.been.called;
       await inkyphat.clearScreen();
       expect(controller.clear).to.have.callCount(1);
@@ -129,7 +129,7 @@ describe('inkyphat', () => {
   });
 
   describe('redraw', () => {
-    it('should initialize contoller if not already done', async function () {
+    it('should initialize contoller if not already done', async () => {
       expect(controller.init).to.not.have.been.called;
       await inkyphat.redraw();
       expect(controller.init).to.have.callCount(1);
@@ -137,7 +137,7 @@ describe('inkyphat', () => {
       expect(controller.init).to.have.callCount(1);
     });
 
-    it('should not initialize contoller if already done', async function () {
+    it('should not initialize contoller if already done', async () => {
       await inkyphat.init();
       controller.init.resetHistory();
       expect(controller.init).to.not.have.been.called;
@@ -145,13 +145,13 @@ describe('inkyphat', () => {
       expect(controller.init).to.not.have.been.called;
     });
 
-    it('should call redraw on controller', async function () {
+    it('should call redraw on controller', async () => {
       expect(controller.redraw).to.not.have.been.called;
       await inkyphat.redraw();
       expect(controller.redraw).to.have.callCount(1);
     });
 
-    it('should pass controller buffer, border colour and mode', async function () {
+    it('should pass controller buffer, border colour and mode', async () => {
       expect(controller.redraw).to.not.have.been.called;
       inkyphat.setBorder(RED);
       inkyphat.setMode('noFlash');
@@ -163,7 +163,7 @@ describe('inkyphat', () => {
       expect(controller.redraw.getCall(0).args[2]).to.equal('noFlash');
     });
 
-    it('should allow the mode to be overridden for this call only', async function () {
+    it('should allow the mode to be overridden for this call only', async () => {
       expect(controller.redraw).to.not.have.been.called;
       inkyphat.setBorder(RED);
       inkyphat.setMode('noFlash');
@@ -177,7 +177,7 @@ describe('inkyphat', () => {
   });
 
   describe('setMode', () => {
-    it('should set default mode used by redraw', async function () {
+    it('should set default mode used by redraw', async () => {
       await inkyphat.redraw();
       expect(controller.redraw).to.have.callCount(1);
       expect(controller.redraw.getCall(0).args[2]).to.equal('quick');
@@ -194,35 +194,65 @@ describe('inkyphat', () => {
     })
   });
 
-  describe('clearBuffer', () => {
-    it('should set all elements in the buffer to white', async function () {
+  describe('drawing', () => {
+    beforeEach(async () => {
       inkyphat.drawRect(10, 10, 0, 0, RED);
       inkyphat.drawRect(150, 50, WIDTH, HEIGHT, BLACK);
       inkyphat.setPixel(30, 40, RED);
       await inkyphat.redraw();
-      let buffer = controller.redraw.getCall(0).args[0];
-      for (let x = 0; x < WIDTH; x++) {
-        for (let y = 0; y < HEIGHT; y++) {
-          if (x < 10 && y < 10) {
-            expect(buffer[x][y], `pre-clear red { ${x}, ${y} }`).to.equal(RED);
-          } else if (x >= 150 && y >= 50) {
-            expect(buffer[x][y], `pre-clear black { ${x}, ${y} }`).to.equal(BLACK);
-          } else if (x === 30 && y === 40) {
-            expect(buffer[x][y], `pre-clear red { ${x}, ${y} }`).to.equal(RED);
-          } else {
-            expect(buffer[x][y], `pre-clear white { ${x}, ${y} }`).to.equal(WHITE);
+    });
+
+    const expectColor = (buffer, x, y) => {
+      if (x < 10 && y < 10) {
+        expect(buffer[x][y], `pre-clear red { ${x}, ${y} }`).to.equal(RED);
+      } else if (x >= 150 && y >= 50) {
+        expect(buffer[x][y], `pre-clear black { ${x}, ${y} }`).to.equal(BLACK);
+      } else if (x === 30 && y === 40) {
+        expect(buffer[x][y], `pre-clear red { ${x}, ${y} }`).to.equal(RED);
+      } else {
+        expect(buffer[x][y], `pre-clear white { ${x}, ${y} }`).to.equal(WHITE);
+      }
+    };
+
+    describe('clearBuffer', () => {
+      it('should set all elements to white', async () => {
+        inkyphat.clearBuffer();
+        await inkyphat.redraw();
+        const buffer = controller.redraw.getCall(1).args[0];
+        for (let x = 0; x < WIDTH; x++) {
+          for (let y = 0; y < HEIGHT; y++) {
+            expect(buffer[x][y], `post-clear white { ${x}, ${y} }`).to.equal(WHITE);
           }
         }
-      }
+      });
+    });
 
-      inkyphat.clearBuffer();
-      await inkyphat.redraw();
-      buffer = controller.redraw.getCall(1).args[0];
-      for (let x = 0; x < WIDTH; x++) {
-        for (let y = 0; y < HEIGHT; y++) {
-          expect(buffer[x][y], `post-clear white { ${x}, ${y} }`).to.equal(WHITE);
+    describe('drawRect', () => {
+      it('should set elements in the rect', () => {
+        const buffer = controller.redraw.getCall(0).args[0];
+        for (let x = 0; x < 11; x++) {
+          for (let y = 0; y < 11; y++) {
+            expectColor(buffer, x, y);
+          }
         }
-      }
+
+        for (let x = 149; x < WIDTH; x++) {
+          for (let y = 49; y < HEIGHT; y++) {
+            expectColor(buffer, x, y);
+          }
+        }
+      });
+    });
+
+    describe('setPixel', () => {
+      it('should set the single element', () => {
+        const buffer = controller.redraw.getCall(0).args[0];
+        for (let x = 29; x < 31; x++) {
+          for (let y = 39; y < 41; y++) {
+            expectColor(buffer, x, y);
+          }
+        }
+      });
     });
   });
 });
