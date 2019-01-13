@@ -87,7 +87,7 @@ describe('inkyphat', () => {
   });
 
   it('should return modes available', () => {
-    expect(inkyphat.getModes()).to.deep.equal(['pimoroni', 'quick', 'noFlash', 'clear']);
+    expect(inkyphat.getModes()).to.deep.equal(['pimoroni', 'pimoroni_yellow', 'quick', 'noFlash', 'clear']);
   });
 
   it('should not pass spiDevice to controller if not specified', async () => {

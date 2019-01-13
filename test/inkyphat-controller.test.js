@@ -63,7 +63,7 @@ const runTests = (version) => {
     });
     spi = {
       clockSpeed: sinon.stub()
-    }
+    };
     Spi = {
       initialize: sinon.stub().returns(spi)
     };

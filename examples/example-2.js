@@ -1,12 +1,12 @@
 const inkyphat = require('../lib/inkyphat')({ logToStd: true });
 
 async function main () {
-  await inkyphat.init()
+  await inkyphat.init();
   inkyphat.setBorder(inkyphat.RED);
 
   let color = inkyphat.BLACK;
-  for (let x = 0; x < (inkyphat.getWidth() / 2) - 0; x++) {
-    for (let y = 0; y < (inkyphat.getHeight() / 2) - 0; y++) {
+  for (let x = 0; x < (inkyphat.getWidth() / 2) - 1; x++) {
+    for (let y = 0; y < (inkyphat.getHeight() / 2) - 2; y++) {
       inkyphat.drawRect(x * 2, y * 2, (x * 2) + 2, (y * 2) + 2, color);
       if (color === inkyphat.BLACK) {
         color = inkyphat.RED;
